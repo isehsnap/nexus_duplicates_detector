@@ -4,11 +4,12 @@
 #include <regex>
 #include <unordered_map>
 #include <unordered_set>
+#include <cassert>
 
 namespace fs = std::filesystem;
 using namespace std;
 
-int levenshteinDistance(const std::string &s1, const std::string &s2)
+int levenshteinDistance(const std::string& s1, const std::string& s2)
 {
     int m = s1.size();
     int n = s2.size();
@@ -52,7 +53,8 @@ std::string getMetaFileId(const fs::path& filePath)
         {
             std::string modId = line.substr(pos1 + key1.length());
             return modId;
-        } else
+        }
+        else
         {
             const std::string key2 = "modID=";
             auto pos2 = line.find(key2);
@@ -74,32 +76,12 @@ bool nexus_file_comp(const tuple<fs::path, string>& lhs, const tuple<fs::path, s
 
 int main(const int argc, const char* argv[])
 {
-    try
-    {
-        if (argc != 2 && argc != 3)
-        {
-            throw runtime_error("Invalid number of arguments");
-        }
-    }
-    catch (const runtime_error& e)
-    {
-        cerr << e.what() << endl;
-        cerr << "Usage : .\\nexus_duplicates_detector.exe [DIRECTORY_PATH] or .\\nexus_duplicates_detector.exe [DIRECTORY_PATH] [MAXIMUM DIFFERENT CHARACTERS NUMBER]" << endl;
-    }
 
+    assert((argc == 2 || argc == 3) && "Invalid arguments. Usage : .\\nexus_duplicates_detector.exe [DIRECTORY_PATH] or .\\nexus_duplicates_detector.exe [DIRECTORY_PATH] [MAXIMUM DIFFERENT CHARACTERS NUMBER]");
 
-    try
-    {
-        if (!filesystem::is_directory(argv[1]))
-        {
-            throw runtime_error("Invalid directory path");
-        }
-    }
-    catch (const runtime_error& e)
-    {
-        cerr << e.what() << endl;
-        cerr << "Usage : .\\nexus_duplicates_detector.exe [DIRECTORY_PATH] or .\\nexus_duplicates_detector.exe [DIRECTORY_PATH] [MAXIMUM DIFFERENT CHARACTERS NUMBER]" << endl;
-    }
+    assert(
+        filesystem::is_directory(argv[1]) &&
+        "Invalid directory path. Usage : .\\nexus_duplicates_detector.exe [DIRECTORY_PATH] or .\\nexus_duplicates_detector.exe [DIRECTORY_PATH] [MAXIMUM DIFFERENT CHARACTERS NUMBER]");
 
     std::unordered_multimap<std::string, fs::path> modIdMap;
 
@@ -125,7 +107,8 @@ int main(const int argc, const char* argv[])
 
     for (const auto& [modId, _] : modIdMap)
     {
-        if (displayedModIds.contains(modId)) {
+        if (displayedModIds.contains(modId))
+        {
             // We have already displayed this modId, so skip it
             continue;
         }
@@ -154,7 +137,8 @@ int main(const int argc, const char* argv[])
                         break;
                     }
                 }
-                if (displayedModIds.contains(modId)) {
+                if (displayedModIds.contains(modId))
+                {
                     break;
                 }
             }
